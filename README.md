@@ -1,6 +1,6 @@
 # Shop Loyalty Tracker
 
-A loyalty and membership points tracker for cafés and mini marts, built with TypeScript as my personal project for the **FE403 Advanced JavaScript and TypeScript** course.
+A loyalty and membership points tracker for cafés and mini marts, built with TypeScript as my personal project for the **Advanced JavaScript and TypeScript** course.
 
 ## About
 
@@ -13,8 +13,6 @@ A few rules shape how it works:
 - **Points come from the order.** Each menu item is worth points, and big orders can earn a bonus.
 - **Cancelled orders give nothing.**
 
-The result (points, member or not, tier) is calculated from the order data, not typed in by hand.
-
 ## Main Data
 
 | Data       | What it holds                               |
@@ -26,16 +24,6 @@ The result (points, member or not, tier) is calculated from the order data, not 
 ## Current Stage
 
 The project is at its first stage: a single typed program with a hard-coded menu and some orders. It checks the orders, calculates points, and prints each customer's points and membership status.
-
-## Roadmap
-
-As the course goes on, the project will grow in stages:
-
-1. A single typed program (current)
-2. A monorepo, so the rules and types can be shared
-3. A command-line program that reads the menu and orders from files
-4. A backend that stores the data and evaluates the rules, with a command-line client
-5. A browser client where customers can check their points
 
 ## Getting Started
 
