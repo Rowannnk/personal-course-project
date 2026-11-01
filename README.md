@@ -4,44 +4,42 @@ A loyalty and membership points tracker for a café or mini mart, built with Typ
 
 ## About
 
-Small shops often want to reward regular customers but don't have a simple system for it. This project lets a shop record customer orders, turn them into points, and decide when a customer qualifies as a member.
+Small shops often want to reward regular customers but don't have a simple system to manage loyalty points. This project aims to help a shop record customer orders, calculate points, and determine membership levels.
 
-For now it is built for one shop. Supporting several shops, each with its own points, is planned for later.
+For now, the project focuses on one shop. Supporting multiple shops, redeemable rewards, and an owner dashboard are planned for the future.
 
-A few rules shape how it works:
+Some basic rules guide the system:
 
-- **One purchase is not enough.** A customer has to complete several orders before becoming a member, so the requirement makes sense for the shop owner.
-- **Points come from the order.** Each menu item is worth points, and big orders can earn a bonus.
-- **Cancelled orders give nothing.**
-
-The result (points, member or not, tier) is calculated from the order data, not typed in by hand.
+- **Several purchases are required:** A customer needs to complete multiple orders before qualifying for membership.
+- **Points come from orders:** Menu items have point values, and larger orders can earn bonus points.
+- **Cancelled orders earn no points:** Cancelled orders are excluded from the calculation.
+- **Membership is calculated:** Customer points, membership status, and tiers are determined from order data.
 
 ## Main Data
 
-| Data       | What it holds                               |
-| ---------- | ------------------------------------------- |
-| Menu item  | Name, price, category and points value      |
-| Order      | Customer, items with quantities, and status |
-| Membership | A customer's points, tier and member status |
+| Data       | What it holds                                       |
+| ---------- | --------------------------------------------------- |
+| Menu item  | Name, price, category, and points value             |
+| Order      | Customer, items, quantities, and order status       |
+| Membership | Customer points, membership tier, and member status |
 
-## Current Stage
+## Module 1 – Personal Project
 
-The project is at its first stage: a single typed program with a hard-coded menu and some orders for one shop. It checks the orders, calculates points, and prints each customer's points and membership status.
+For Module 1, I created four TypeScript exercises based on the Shop Loyalty Tracker idea.
 
-Later ideas: support for several shops, rewards that points can be spent on, and an owner dashboard.
+| Exercise                      | File                    | Concepts                                                             |
+| ----------------------------- | ----------------------- | -------------------------------------------------------------------- |
+| 1. Create Your Own Data Shape | `src/index.ts`          | Interfaces, primitive types, arrays, and type checking               |
+| 2. Data in Several Kinds      | `src/data-kinds.ts`     | Interfaces, union types, and type narrowing                          |
+| 3. A Keeper of Results        | `src/loyalty-keeper.ts` | Classes, private properties, string unions, and Record               |
+| 4. A Guard at the Door        | `src/data-guard.ts`     | Unknown types, type guards, optional properties, and JSON validation |
+
+In the first exercise, I intentionally introduced incorrect values and removed a required property to see how TypeScript detects errors. I then fixed the mistakes and checked the code again.
 
 ## Getting Started
 
+Install the dependencies:
+
 ```bash
 npm install
-npm start
 ```
-
-## Tooling
-
-| Tool       | Command             | Purpose                             |
-| ---------- | ------------------- | ----------------------------------- |
-| TypeScript | `npm run typecheck` | Checks types without emitting files |
-| ESLint     | `npm run lint`      | Finds code problems                 |
-| Prettier   | `npm run format`    | Formats code consistently           |
-| Run        | `npm start`         | Runs `src/index.ts`                 |
