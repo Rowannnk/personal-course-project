@@ -1,24 +1,7 @@
-export type MembershipTier = "bronze" | "silver" | "gold"
+import LoyaltyTracker, { isMembershipTier } from "./loyalty/index.js"
 
-export class LoyaltyTracker {
-  private memberCounts: Record<MembershipTier, number> = {
-    bronze: 0,
-    silver: 0,
-    gold: 0,
-  }
+export { LoyaltyTracker, isMembershipTier }
 
-  addMember(tier: MembershipTier): void {
-    this.memberCounts[tier] += 1
-  }
+export type { MembershipTier } from "./loyalty/index.js"
 
-  getMemberCount(tier: MembershipTier): number {
-    return this.memberCounts[tier]
-  }
-
-  showSummary(): void {
-    console.log("Membership Summary")
-    console.log("Bronze:", this.memberCounts.bronze)
-    console.log("Silver:", this.memberCounts.silver)
-    console.log("Gold:", this.memberCounts.gold)
-  }
-}
+export default LoyaltyTracker

@@ -1,12 +1,3 @@
-import { LoyaltyTracker } from "@shop/loyalty-core"
+import { runCli } from "./commands.js"
 
-const tracker = new LoyaltyTracker()
-
-tracker.addMember("bronze")
-tracker.addMember("silver")
-tracker.addMember("gold")
-tracker.addMember("gold")
-
-tracker.showSummary()
-
-console.log("Total Gold Members:", tracker.getMemberCount("gold"))
+await runCli()
