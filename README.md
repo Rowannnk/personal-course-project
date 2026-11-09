@@ -367,6 +367,6 @@ Some features I would like to add in the future:
 - Support multiple shops.
 - Build an owner dashboard with more shop statistics.
 
-## Author
+## Author (မင်းခန့်ကျော်)
 
-Personal project for the Advanced JavaScript and TypeScript course.
+Min Khant Kyaw's Personal project for the Advanced JavaScript and TypeScript course.
