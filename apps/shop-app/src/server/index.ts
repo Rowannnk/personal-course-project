@@ -6,10 +6,8 @@ const app = Fastify({
   logger: true,
 })
 
-// Register the members plugin.
 app.register(memberRoutes)
 
-// Start the server.
 const start = async (): Promise<void> => {
   try {
     await app.listen({
