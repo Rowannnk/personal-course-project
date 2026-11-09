@@ -1,29 +1,50 @@
 import type { FastifyInstance } from "fastify"
 
-type MembershipTier = "bronze" | "silver" | "gold"
+import {
+  isMembershipTier,
+  type CreateMemberInput,
+  type Member,
+} from "@shop/loyalty-core/loyalty"
 
-type Member = {
-  id: string
-  name: string
-  tier: MembershipTier
+import { readMembers, saveMembers } from "../../data/members-store.js"
+
+type ApiError = {
+  message: string
 }
-
-const members: Member[] = [
-  { id: "1", name: "John", tier: "bronze" },
-  { id: "2", name: "Sarah", tier: "silver" },
-  { id: "3", name: "David", tier: "gold" },
-]
-
-let nextMemberId = 4
-
-const API_KEY = "shop-secret-key"
 
 export default async function memberRoutes(
   app: FastifyInstance,
 ): Promise<void> {
-  app.get<{ Params: { id: string } }>(
-    "/members/:id",
-    async (request, reply) => {
+  app.get<{
+    Reply: {
+      200: Member[]
+      500: ApiError
+    }
+  }>("/members", async (_request, reply) => {
+    try {
+      const members = await readMembers()
+
+      return reply.code(200).send(members)
+    } catch (error) {
+      app.log.error(error)
+
+      return reply.code(500).send({
+        message: "Could not load members.",
+      })
+    }
+  })
+
+  app.get<{
+    Params: { id: string }
+    Reply: {
+      200: Member
+      404: ApiError
+      500: ApiError
+    }
+  }>("/members/:id", async (request, reply) => {
+    try {
+      const members = await readMembers()
+
       const member = members.find((item) => item.id === request.params.id)
 
       if (!member) {
@@ -33,10 +54,23 @@ export default async function memberRoutes(
       }
 
       return reply.code(200).send(member)
-    },
-  )
+    } catch (error) {
+      app.log.error(error)
 
-  app.post<{ Body: unknown }>("/members", async (request, reply) => {
+      return reply.code(500).send({
+        message: "Could not find the requested member.",
+      })
+    }
+  })
+
+  app.post<{
+    Body: unknown
+    Reply: {
+      201: Member
+      400: ApiError
+      500: ApiError
+    }
+  }>("/members", async (request, reply) => {
     const body = request.body
 
     if (
@@ -46,33 +80,46 @@ export default async function memberRoutes(
       !("tier" in body) ||
       typeof body.name !== "string" ||
       body.name.trim() === "" ||
-      (body.tier !== "bronze" && body.tier !== "silver" && body.tier !== "gold")
+      !isMembershipTier(body.tier)
     ) {
       return reply.code(400).send({
         message: "Invalid member data. Provide a name and valid tier.",
       })
     }
 
-    const newMember: Member = {
-      id: String(nextMemberId++),
+    const input: CreateMemberInput = {
       name: body.name.trim(),
       tier: body.tier,
     }
 
-    members.push(newMember)
+    try {
+      const members = await readMembers()
 
-    return reply.code(201).send(newMember)
-  })
+      const nextId =
+        members.reduce((highest, member) => {
+          const numericId = Number(member.id)
 
-  app.get("/members", async (request, reply) => {
-    const apiKey = request.headers["x-shop-api-key"]
+          return Number.isInteger(numericId)
+            ? Math.max(highest, numericId)
+            : highest
+        }, 0) + 1
 
-    if (apiKey !== API_KEY) {
-      return reply.code(401).send({
-        message: "Unauthorized. Missing or invalid API key.",
+      const newMember: Member = {
+        id: String(nextId),
+        ...input,
+      }
+
+      members.push(newMember)
+
+      await saveMembers(members)
+
+      return reply.code(201).send(newMember)
+    } catch (error) {
+      app.log.error(error)
+
+      return reply.code(500).send({
+        message: "Could not create the member.",
       })
     }
-
-    return reply.code(200).send(members)
   })
 }

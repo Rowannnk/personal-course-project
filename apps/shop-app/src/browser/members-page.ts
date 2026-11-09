@@ -1,17 +1,6 @@
-type MembershipTier = "bronze" | "silver" | "gold"
+import { getMembers } from "../services/members.js"
 
-type Member = {
-  id: string
-  name: string
-  tier: MembershipTier
-}
-
-const members: Member[] = [
-  { id: "1", name: "John", tier: "bronze" },
-  { id: "2", name: "Sarah", tier: "silver" },
-  { id: "3", name: "David", tier: "gold" },
-  { id: "4", name: "Emma", tier: "silver" },
-]
+import type { Member } from "@shop/loyalty-core/loyalty"
 
 const membersListElement =
   document.querySelector<HTMLUListElement>("#members-list")
@@ -19,32 +8,94 @@ const membersListElement =
 const memberDetailsElement =
   document.querySelector<HTMLElement>("#member-details")
 
+const totalMembersElement =
+  document.querySelector<HTMLElement>("#total-members")
+
+const tierCountElement = document.querySelector<HTMLElement>("#tier-count")
+
+const shopStatusElement = document.querySelector<HTMLElement>("#shop-status")
+
+const memberCountElement = document.querySelector<HTMLElement>("#member-count")
+
 if (!membersListElement || !memberDetailsElement) {
   throw new Error("Could not find the required page elements.")
 }
 
-const membersList: HTMLUListElement = membersListElement
-const memberDetails: HTMLElement = memberDetailsElement
+const membersList = membersListElement
+const memberDetails = memberDetailsElement
 
-for (const member of members) {
-  const listItem = document.createElement("li")
+let members: Member[] = []
 
-  const memberInfo = document.createElement("div")
+function showMessage(message: string): void {
+  const messageElement = document.createElement("p")
+  messageElement.textContent = message
 
-  const memberName = document.createElement("div")
-  memberName.className = "member-name"
-  memberName.textContent = member.name
+  membersList.replaceChildren(messageElement)
+}
 
-  const memberTier = document.createElement("div")
-  memberTier.className = "member-tier"
-  memberTier.textContent = `${member.tier} membership`
+function updateStatistics(): void {
+  if (totalMembersElement) {
+    totalMembersElement.textContent = String(members.length).padStart(2, "0")
+  }
 
-  memberInfo.append(memberName, memberTier)
+  if (tierCountElement) {
+    const uniqueTiers = new Set(members.map((member) => member.tier))
 
-  listItem.append(memberInfo)
-  listItem.dataset.memberId = member.id
+    tierCountElement.textContent = String(uniqueTiers.size).padStart(2, "0")
+  }
 
-  membersList.append(listItem)
+  if (shopStatusElement) {
+    shopStatusElement.textContent = "Active"
+  }
+
+  if (memberCountElement) {
+    memberCountElement.textContent = `${members.length} ${members.length === 1 ? "Member" : "Members"}`
+  }
+}
+
+function renderMembers(): void {
+  membersList.replaceChildren()
+
+  if (members.length === 0) {
+    showMessage("No members found. Add your first member using the CLI.")
+    return
+  }
+
+  for (const member of members) {
+    const listItem = document.createElement("li")
+    listItem.dataset.memberId = member.id
+
+    const memberInfo = document.createElement("div")
+
+    const memberName = document.createElement("div")
+    memberName.className = "member-name"
+    memberName.textContent = member.name
+
+    const memberTier = document.createElement("div")
+    memberTier.className = "member-tier"
+    memberTier.textContent = `${member.tier} membership`
+
+    memberInfo.append(memberName, memberTier)
+    listItem.append(memberInfo)
+
+    membersList.append(listItem)
+  }
+}
+
+function showMemberDetails(member: Member): void {
+  const heading = document.createElement("h2")
+  heading.textContent = "Member Details"
+
+  const name = document.createElement("p")
+  name.textContent = `Name: ${member.name}`
+
+  const tier = document.createElement("p")
+  tier.textContent = `Membership Tier: ${member.tier}`
+
+  const id = document.createElement("p")
+  id.textContent = `Member ID: ${member.id}`
+
+  memberDetails.replaceChildren(heading, name, tier, id)
 }
 
 function handleMemberClick(event: MouseEvent): void {
@@ -66,19 +117,39 @@ function handleMemberClick(event: MouseEvent): void {
     return
   }
 
-  const heading = document.createElement("h2")
-  heading.textContent = "Member Details"
-
-  const name = document.createElement("p")
-  name.textContent = `Name: ${selectedMember.name}`
-
-  const tier = document.createElement("p")
-  tier.textContent = `Membership Tier: ${selectedMember.tier}`
-
-  memberDetails.replaceChildren(heading, name, tier)
+  showMemberDetails(selectedMember)
 }
 
-membersList.addEventListener("click", handleMemberClick)
+async function initializePage(): Promise<void> {
+  showMessage("Loading members...")
+
+  try {
+    members = await getMembers()
+
+    renderMembers()
+    updateStatistics()
+
+    memberDetails.textContent =
+      "Select a member from the list to view their details."
+
+    membersList.addEventListener("click", handleMemberClick)
+  } catch (error) {
+    const message =
+      error instanceof Error
+        ? error.message
+        : "Something went wrong while loading members."
+
+    showMessage(message)
+
+    memberDetails.textContent = "Member details are unavailable right now."
+
+    if (shopStatusElement) {
+      shopStatusElement.textContent = "Unavailable"
+    }
+  }
+}
+
+void initializePage()
 
 window.addEventListener(
   "pagehide",

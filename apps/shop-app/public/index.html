@@ -281,17 +281,17 @@
       <section class="stats">
         <div class="stat-card">
           <div class="stat-label">Total Members</div>
-          <div class="stat-value">04</div>
+          <div class="stat-value" id="total-members">00</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-label">Membership Tiers</div>
-          <div class="stat-value">03</div>
+          <div class="stat-value" id="tier-count">00</div>
         </div>
 
         <div class="stat-card">
           <div class="stat-label">Shop Status</div>
-          <div class="stat-value">Active</div>
+          <div class="stat-value" id="shop-status">Active</div>
         </div>
       </section>
 
@@ -299,7 +299,7 @@
         <div class="panel">
           <div class="panel-heading">
             <h2>Our Members</h2>
-            <span class="count">4 Members</span>
+            <span class="count" id="member-count">Loading...</span>
           </div>
 
           <ul id="members-list"></ul>
@@ -319,6 +319,6 @@
 
     <footer>Shop Loyalty Tracker · Personal Project</footer>
 
-    <script src="./scripts/members-page.js" defer></script>
+    <script type="module" src="./scripts/browser/members-page.js"></script>
   </body>
 </html>

@@ -7,8 +7,8 @@
     "strict": true,
     "skipLibCheck": true,
     "noEmit": false,
-    "rootDir": "src/browser",
+    "rootDir": "src",
     "outDir": "public/scripts"
   },
-  "include": ["src/browser/**/*.ts"]
+  "include": ["src/browser/**/*.ts", "src/services/**/*.ts"]
 }

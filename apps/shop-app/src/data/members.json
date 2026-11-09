@@ -1,6 +1,57 @@
 [
-  "bronze",
-  "silver",
-  "gold",
-  "gold"
+  {
+    "id": "1",
+    "name": "John",
+    "tier": "bronze"
+  },
+  {
+    "id": "2",
+    "name": "Sarah",
+    "tier": "silver"
+  },
+  {
+    "id": "3",
+    "name": "David",
+    "tier": "gold"
+  },
+  {
+    "id": "4",
+    "name": "Emma",
+    "tier": "silver"
+  },
+  {
+    "id": "5",
+    "name": "Alex",
+    "tier": "gold"
+  },
+  {
+    "id": "6",
+    "name": "Alex",
+    "tier": "gold"
+  },
+  {
+    "id": "7",
+    "name": "Grace",
+    "tier": "gold"
+  },
+  {
+    "id": "8",
+    "name": "Michael 1",
+    "tier": "silver"
+  },
+  {
+    "id": "9",
+    "name": "Michael 2",
+    "tier": "silver"
+  },
+  {
+    "id": "10",
+    "name": "Test User",
+    "tier": "gold"
+  },
+  {
+    "id": "11",
+    "name": "Final Test",
+    "tier": "gold"
+  }
 ]

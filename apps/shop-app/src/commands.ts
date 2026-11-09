@@ -1,19 +1,12 @@
 import { Command, CommanderError } from "commander"
 import inquirer from "inquirer"
-import { writeFile } from "node:fs/promises"
-import { dirname, join } from "node:path"
-import { fileURLToPath } from "node:url"
 
 import {
   isMembershipTier,
   type MembershipTier,
 } from "@shop/loyalty-core/loyalty"
 
-import { loadMembers } from "./data/load-members.js"
-
-const currentFolder = dirname(fileURLToPath(import.meta.url))
-
-const membersFile = join(currentFolder, "data", "members.json")
+import { createMember, getMembers } from "./services/members.js"
 
 const program = new Command()
 
@@ -27,9 +20,14 @@ program.exitOverride()
 program
   .command("add")
   .description("Add members to a membership tier")
+  .argument("<name>", "Member name")
   .argument("<tier>", "Membership tier: bronze, silver, or gold")
   .option("-q, --quantity <number>", "Number of members to add", "1")
-  .action(async (tier: string, options: { quantity: string }) => {
+  .action(async (name: string, tier: string, options: { quantity: string }) => {
+    if (name.trim() === "") {
+      throw new Error("Member name cannot be empty.")
+    }
+
     if (!isMembershipTier(tier)) {
       throw new Error("Invalid tier. Choose bronze, silver, or gold.")
     }
@@ -40,15 +38,21 @@ program
       throw new Error("Quantity must be a positive whole number.")
     }
 
-    const members = await loadMembers()
-
     for (let i = 0; i < quantity; i++) {
-      members.push(tier)
+      const memberName =
+        quantity === 1 ? name.trim() : `${name.trim()} ${i + 1}`
+
+      const member = await createMember({
+        name: memberName,
+        tier,
+      })
+
+      console.log(
+        `Created ${member.name} (${member.tier}) with ID ${member.id}.`,
+      )
     }
 
-    await writeFile(membersFile, JSON.stringify(members, null, 2), "utf-8")
-
-    console.log(`Successfully added ${quantity} ${tier} member(s).`)
+    console.log(`Successfully added ${quantity} member(s).`)
   })
 
 program
@@ -77,11 +81,24 @@ program
       tier = tierArgument
     }
 
-    const members = await loadMembers()
+    const members = await getMembers()
+    const count = members.filter((member) => member.tier === tier).length
 
-    const count = members.filter((member) => member === tier).length
+    console.log(`Total ${tier} members: ${count}`)
+  })
 
-    console.log(`Total ${tier} Members: ${count}`)
+program
+  .command("list")
+  .description("Display all shop members")
+  .action(async () => {
+    const members = await getMembers()
+
+    if (members.length === 0) {
+      console.log("There are no members yet.")
+      return
+    }
+
+    console.table(members)
   })
 
 export async function runCli(): Promise<void> {
